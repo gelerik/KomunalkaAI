@@ -15,8 +15,6 @@ YANDEX_VISION_URL = "https://vision.api.cloud.yandex.net/vision/v1/batchAnalyze"
 
 async def recognize_text(image_bytes: bytes) -> str:
     """
-    Отправляет изображение в Yandex Vision OCR и возвращает распознанный текст.
-
     Алгоритм:
     1) Кодируем байты изображения в Base64 (API принимает content именно в таком виде).
     2) Формируем payload для метода batchAnalyze:
@@ -37,8 +35,6 @@ async def recognize_text(image_bytes: bytes) -> str:
     encoded_image = base64.b64encode(image_bytes).decode("utf-8")
 
     # Структура запроса для batchAnalyze:
-    # - folderId: папка в Yandex Cloud
-    # - analyze_specs: список задач анализа (можно отправлять сразу несколько)
     payload: dict[str, Any] = {
         "folderId": config.yandex_folder_id,
         "analyzeSpecs": [
@@ -70,8 +66,6 @@ async def recognize_text(image_bytes: bytes) -> str:
                 timeout=aiohttp.ClientTimeout(total=30),
             ) as response:
                 if response.status != 200:
-                    # Обязательно печатаем "сырое" тело ответа API,
-                    # чтобы сразу видеть точную причину ошибки в терминале.
                     error_body = await response.text()
                     print(error_body)
                     raise RuntimeError(
